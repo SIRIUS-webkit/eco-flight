@@ -23,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({
     <div>
       {linkTag ? (
         <Link href={link} passHref>
-          <a className={cls}>{text}</a>
+          <p className={cls}>{text}</p>
         </Link>
       ) : (
         <button type={type} onClick={onClick} className={cls}>

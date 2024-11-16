@@ -1,10 +1,14 @@
 import MaxWrapper from "@/components/common/MaxWrapper";
 import Image from "next/image";
+import Home from "@/components/home";
 
-export default function Home() {
+export default function Main() {
   return (
-    <MaxWrapper>
-      <h1>Home page</h1>
-    </MaxWrapper>
+    <>
+      <div className="bg-[#09090b]">
+        <Home />
+      </div>
+      <MaxWrapper></MaxWrapper>
+    </>
   );
 }
