@@ -23,12 +23,13 @@ const AccountPage: React.FC = () => {
   );
   const [stakeAmount, setStakeAmount] = useState<string>("");
   const { provider, loggedIn, initialized }: any = useWeb3Auth();
+  const [errMsg, setErrMsg] = useState("");
 
   const pathname = usePathname();
 
   const tabs = [
     { label: "Account", path: "/my-account" },
-    { label: "Donation", path: "/donation" },
+    { label: "Donation", path: "/my-donation" },
     { label: "My Projects", path: "/my-project" },
     { label: "My Emission", path: "/my-emission" },
   ];
@@ -69,10 +70,28 @@ const AccountPage: React.FC = () => {
 
   const handleStake = async () => {
     try {
-      if (!ecoTokenContract || !stakeAmount) return;
-      const tx = await ecoTokenContract.stakeTokens(
-        ethers.utils.parseEther(stakeAmount)
-      );
+      if (!ecoTokenContract || !stakeAmount) {
+        setErrMsg("Please enter a valid stake amount.");
+        return;
+      }
+
+      // Convert the stake amount to Wei
+      const stakeAmountWei = ethers.utils.parseEther(stakeAmount);
+
+      // Fetch the user's ECO token balance
+      const signerAddress = await provider.getSigner().getAddress();
+      const ecoBalanceWei = await ecoTokenContract.balanceOf(signerAddress);
+
+      // Check if the user has sufficient balance
+      if (stakeAmountWei.gt(ecoBalanceWei)) {
+        setErrMsg(
+          "Insufficient balance. Please enter an amount within your balance."
+        );
+        return;
+      }
+
+      // Perform the staking transaction
+      const tx = await ecoTokenContract.stakeTokens(stakeAmountWei);
       await tx.wait();
       alert("Successfully staked!");
       fetchBalanceAndStakeDetails();
@@ -129,7 +148,7 @@ const AccountPage: React.FC = () => {
 
       {loggedIn ? (
         <div className="overflow-x-auto">
-          <h2 className="text-2xl font-semibold mb-4">Personal Information</h2>
+          <h4 className="font-semibold mb-4">Personal Information</h4>
           <table className="table w-full border">
             <tbody>
               <tr>
@@ -171,7 +190,15 @@ const AccountPage: React.FC = () => {
                     <input
                       type="number"
                       value={stakeAmount}
-                      onChange={(e) => setStakeAmount(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (parseFloat(value) < 0) {
+                          setErrMsg("Stake amount cannot be negative.");
+                        } else {
+                          setErrMsg("");
+                          setStakeAmount(value);
+                        }
+                      }}
                       className="input input-bordered w-full max-w-xs"
                       placeholder="0.0"
                     />
@@ -181,6 +208,7 @@ const AccountPage: React.FC = () => {
                     >
                       Stake
                     </button>
+                    {errMsg && <p className="p3 text-error">{errMsg}</p>}
                   </td>
                 </tr>
               )}
