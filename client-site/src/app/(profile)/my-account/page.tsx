@@ -95,7 +95,6 @@ const AccountPage: React.FC = () => {
         return;
       }
 
-      // Perform the staking transaction
       const tx = await ecoTokenContract.stakeTokens(stakeAmountWei);
       await tx.wait();
       alert("Successfully staked!");
