@@ -75,7 +75,7 @@ const MyProjectTabs: React.FC = () => {
                 ? "Completed"
                 : "Active",
           }))
-          .filter((project) => project.projectOwner === address); // Filter projects by the user's address
+          .filter((project: any) => project.projectOwner === address); // Filter projects by the user's address
 
         setUserProjects(filteredProjects);
         setPageLoading(false);

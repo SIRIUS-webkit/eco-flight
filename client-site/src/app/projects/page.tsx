@@ -195,11 +195,11 @@ const ProjectsPage: React.FC = () => {
 
     const { minDonation, maxDonation } = selectedProject;
 
-    if (donationAmount < minDonation) {
+    if (Number(donationAmount) < minDonation) {
       setErrorMessage(`Minimum donation is ${minDonation} ETH`);
       return;
     }
-    if (donationAmount > maxDonation) {
+    if (Number(donationAmount) > maxDonation) {
       setErrorMessage(`Maximum donation is ${maxDonation} ETH`);
       return;
     }
@@ -247,7 +247,7 @@ const ProjectsPage: React.FC = () => {
           ? Array(3) // Display 3 skeleton cards
               .fill(0)
               .map((_, index) => <SkeletonCard key={index} />)
-          : projects.map((project) => {
+          : projects.map((project: any) => {
               const progressPercentage = Math.min(
                 (project.fundsRaised / project.totalFundsRequired) * 100,
                 100

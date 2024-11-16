@@ -1,3 +1,4 @@
+import ChatBot from "@/components/Chatbot";
 import CountSection from "@/components/common/CountSection";
 import MaxWrapper from "@/components/common/MaxWrapper";
 import Home from "@/components/home";
@@ -23,6 +24,7 @@ export default function Main() {
           <HomeProject />
         </div>
       </MaxWrapper>
+      <ChatBot />
     </>
   );
 }

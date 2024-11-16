@@ -34,6 +34,7 @@ const CreateProjectForm: React.FC = () => {
   const [mediaFile, setMediaFile] = useState<MediaFile | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error">();
   const [greenProjectContract, setGreenProjectContract] =
@@ -60,6 +61,7 @@ const CreateProjectForm: React.FC = () => {
   }, [provider, loggedIn]);
 
   const handleImageUpload = async (file: File) => {
+    setUploadLoading(true);
     const formData = new FormData();
     formData.append("file", file);
 
@@ -76,10 +78,13 @@ const CreateProjectForm: React.FC = () => {
       const data = await response.json();
       setMediaFile({ url: data.url, public_id: data.public_id });
       setMediaPreview(data.url);
+      setAlertMessage("Image uploaded successfully!");
+      setAlertType("success");
     } catch (error) {
-      console.error("Error uploading image:", error);
       setAlertMessage("Error uploading image");
       setAlertType("error");
+    } finally {
+      setUploadLoading(false); // End loading
     }
   };
 
@@ -364,12 +369,21 @@ const CreateProjectForm: React.FC = () => {
             <span className="p2">Media Upload</span>
           </label>
           {!mediaFile ? (
-            <input
-              type="file"
-              onChange={handleFileChange}
-              className="file-input file-input-bordered"
-              accept="image/*"
-            />
+            <div>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="file-input file-input-bordered w-full"
+                accept="image/*"
+                disabled={loading}
+              />
+              {uploadLoading && (
+                <div className="mt-2 flex items-center">
+                  <span className="loading loading-spinner loading-md"></span>
+                  <p className="ml-2 text-gray-500">Uploading...</p>
+                </div>
+              )}
+            </div>
           ) : (
             <div className="relative w-32 h-32">
               <img
@@ -398,18 +412,6 @@ const CreateProjectForm: React.FC = () => {
           />
         </div>
       </form>
-
-      {alertMessage && (
-        <div
-          className={`alert ${
-            alertType === "success" ? "alert-success" : "alert-error"
-          } shadow-lg my-4`}
-        >
-          <div>
-            <span>{alertMessage}</span>
-          </div>
-        </div>
-      )}
     </>
   );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { PropsWithChildren } from "react";
 
 const MaxWrapper: React.FC<PropsWithChildren<{}>> = ({ children }) => {
