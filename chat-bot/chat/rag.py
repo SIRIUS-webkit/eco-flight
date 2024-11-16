@@ -115,7 +115,7 @@ class RAG():
 
     def generate_text(self, question, context):
         print("Generating .......")
-        prompt_template = ("Please generate the answer to the question based on the context provided which is the retrieved data and give short answer like answering Q&A bot for our product ecofly.\n"
+        prompt_template = ("Please generate the answer to the question based on the context provided and give short answer like answering Q&A bot for our product ecofly.\n"
                        f"Context: {context}\n"
                        f"Question: {question}\n"
                        "Answer:")

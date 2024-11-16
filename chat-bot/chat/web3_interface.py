@@ -9,13 +9,13 @@ load_dotenv()
 # Connect to the Sepolia network using Infura
 infura_url = f"https://sepolia.infura.io/v3/{os.getenv('NEXT_PUBLIC_INFURA_API_KEY')}"
 web3 = Web3(Web3.HTTPProvider(infura_url))
-with open("D:/tokenized-crowdfunding-platform/smart-contract/artifacts/contracts/EcoToken.sol/EcoToken.json") as f:
+with open("contract/artifacts/contracts/EcoToken.sol/EcoToken.json") as f:
     eco_token_abi = json.load(f)["abi"]
 
-with open("D:/tokenized-crowdfunding-platform/smart-contract/artifacts/contracts/CarbonEmission.sol/CarbonEmission.json") as f:
+with open("contract/artifacts/contracts/CarbonEmission.sol/CarbonEmission.json") as f:
     carbon_emission_abi = json.load(f)["abi"]
 
-with open("D:/tokenized-crowdfunding-platform/smart-contract/artifacts/contracts/GreenProject.sol/GreenProject.json") as f:
+with open("contract/artifacts/contracts/GreenProject.sol/GreenProject.json") as f:
     green_project_abi = json.load(f)["abi"]
 
 # Set up contract addresses
@@ -42,88 +42,39 @@ def getUserFlights(user_address):
 
 #getUserFlights("0x05C24Bcc77485bA11a32c17FB3c887D3a2F00CFb")
 
-def getDonationProjects():
+def getDonationProjects(user_address):
     projects_lst = green_project_contract.functions.getProjects().call()
     print("Projects list", projects_lst)
-    return projects_lst
+    formatted_string = "Here are the donation projects list:\n"
+    for i, project in enumerate(projects_lst[0], start=1):
+        project_name = project[0] if isinstance(project[0], str) else project[0][0]
+        formatted_string += f" {i}. {project_name}\n"
+    return formatted_string
 
-projects = getDonationProjects()
-for p in projects:
-    print("Projects :", p[0][0])
-    print("Description :", p[0][1])
 
-
-def getUserBalance(user_address="0x05C24Bcc77485bA11a32c17FB3c887D3a2F00CFb"):
+def getUserBalance(user_address):
     """Check the balance of the given wallet address"""
     print(web3.eth.get_balance(user_address))
-    return f"Your balance is {web3.eth.get_balance(user_address)}"
-
-
-def getEcotokenBalance(user_address):
-    ecotokenAmount = eco_token_contract.functions.balanceOf(user_address).call()
-    return ecotokenAmount
+    return f"Your balance is {round(web3.eth.get_balance(user_address))*(10 ** (-18))} ETH"
 
 #print(getEcotokenBalance("0x05C24Bcc77485bA11a32c17FB3c887D3a2F00CFb"))
 
-def get_total_carbon_emission(user_address="0x05C24Bcc77485bA11a32c17FB3c887D3a2F00CFb"):
+def get_total_carbon_emission(user_address):
+    """Check the total amount of carbon emission"""
     print("It is calling total carbon emission")
     # Call the getUserFlights function
     try:
         flights = carbon_emission_contract.functions.getUserFlights(user_address).call()
-        
+        print("Fight are", flights)
         # Sum up the emissions
         total_emission = sum(flight[4] for flight in flights)  # Assuming emission is the 5th field in the tuple
-
-        return total_emission
+        print("Total emission is", round(total_emission/100,2))
+        return f"Total emission is {round(total_emission/100,2)}"
     except Exception as e:
         print(f"Error fetching user flights: {e}")
         return None
 
 
-def donate_to_project(project_id, donation_amount, sender_address, private_key):
-    """
-    Donate to a project on the GreenProject smart contract.
-
-    :param project_id: The ID of the project to donate to.
-    :param donation_amount: The donation amount in Wei.
-    :param sender_address: The Ethereum address of the donor.
-    :param private_key: The private key of the donor (for signing the transaction).
-    :return: Transaction receipt or error message.
-    """
-
-    # Prepare the transaction
-    try:
-        tx = green_project_contract.functions.donateToProject(project_id).build_transaction({
-            'from': sender_address,
-            'value': donation_amount,
-            'gas': 300000,  # Estimate the gas limit
-            'gasPrice': web3.to_wei('5', 'gwei'),
-            'nonce': web3.eth.get_transaction_count(sender_address),
-        })
-
-        # Sign the transaction
-        signed_tx = web3.eth.account.sign_transaction(tx, private_key)
-
-        # Send the transaction
-        tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
-
-        # Wait for transaction receipt
-        receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
-
-        return receipt
-    except Exception as e:
-        print(f"Error while donating to project: {e}")
-        return None
-    
-
-"""def get_carbon_emission(user_address):
-    # Call the contract function to retrieve carbon data
-    emission_data = carbon_emission_contract.functions.getUserFlights(user_address).call()
-    return f"Your current carbon emission is {emission_data} kg of CO₂."
-
-
-
-
 def get_eco_token_balance(user_address):
     balance = eco_token_contract.functions.balanceOf(user_address).call()
-    return f"You currently hold {balance} EcoTokens."""
+    return f"You currently hold {round(balance*(10 ** (-18)))} EcoTokens."""
