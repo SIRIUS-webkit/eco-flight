@@ -1,8 +1,8 @@
 # EcoFly 🌍✈️
 
-Ecofly focuses on carbon emission tracking and offsetting by flight users. The project includes several components: a flight form where users input flight details to calculate the carbon emissions generated; a donation system that accepts cryptocurrency and rewards users with eco tokens; a carbon offset projects form that allows green initiatives to provide their information and join our platform; and a RAG chatbot that guides users by suggesting suitable carbon offset projects based on their preferences and encouraging donations. 
+Ecofly focuses on carbon emission tracking and offsetting by flight users. The project includes several components: a flight form where users input flight details to calculate the carbon emissions generated; a donation system that accepts cryptocurrency and rewards users with eco tokens; a carbon offset projects form that allows green initiatives to provide their information and join our platform; and a RAG chatbot that guides users by suggesting suitable carbon offset projects based on their preferences and encouraging donations.
 
-------
+---
 
 ## 🚀 Features
 
@@ -25,12 +25,13 @@ Ecofly focuses on carbon emission tracking and offsetting by flight users. The p
 2. **Install Frontend Dependencies**:
 
    ```
-   
+   cd client-site
+   npm install
+   npm run dev
+
    ```
 
 3. **Run Frontend**:
-
-   
 
 4. **Install Chatbot Dependencies**:
 
@@ -45,8 +46,6 @@ Ecofly focuses on carbon emission tracking and offsetting by flight users. The p
    ```
    python manage.py runserver --noreload
    ```
-
-
 
 ## 📂 Folder Structure
 
@@ -66,12 +65,10 @@ eco-flight/
 │   ├── chat                 # Django main application
          ├──rag.py
 │   ├── requirements.txt     # Chatbot dependencies
-│   └── mychat       
+│   └── mychat
 │   └── manage.py
-└── README.md           
+└── README.md
 ```
-
-
 
 ## 🛠️ Technologies Used
 
@@ -81,12 +78,9 @@ eco-flight/
 - **Smart Contracts**: Chainlink Oracle Integration for emission data, ERC-20 EcoTokens
 - **AI**: Retrieval-Augmented Generation (RAG) , LLM-based chatbot for user assistance
 
-
-
 ## 👥 Team
 
 - La Min Ko Ko
 - Kyu Kyu Swe
 - Hnin Ei Khaing
 - Eaint Lay Hmone
-
