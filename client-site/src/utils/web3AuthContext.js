@@ -35,9 +35,9 @@ export const Web3AuthProvider = ({ children }) => {
   useEffect(() => {
     const initWeb3Auth = async () => {
       try {
-        // const res = await fetch("/api/session");
-        // const { loggedIn: serverLoggedIn } = await res.json();
-        // setLoggedIn(serverLoggedIn);
+        const res = await fetch("/api/session");
+        const { loggedIn: serverLoggedIn } = await res.json();
+        setLoggedIn(serverLoggedIn);
 
         const web3authInstance = new Web3Auth({
           clientId,
@@ -70,7 +70,7 @@ export const Web3AuthProvider = ({ children }) => {
           localStorage.setItem("usrWallet", address);
 
           setProvider(ethersProvider);
-          setLoggedIn(false);
+          setLoggedIn(true);
 
           // Initialize Push Protocol after successful login
           await initializePushProtocol(ethersProvider);
@@ -195,10 +195,10 @@ export const Web3AuthProvider = ({ children }) => {
         setProvider(ethersProvider);
         setLoggedIn(true);
 
-        // await fetch("/api/session", {
-        //   method: "POST",
-        //   body: JSON.stringify({ loggedIn: true }),
-        // });
+        await fetch("/api/session", {
+          method: "POST",
+          body: JSON.stringify({ loggedIn: true }),
+        });
       } catch (err) {
         console.error("Error wrapping provider in Web3Provider:", err);
       }
