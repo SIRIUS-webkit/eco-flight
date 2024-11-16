@@ -11,6 +11,7 @@ const Navbar: () => React.JSX.Element = () => {
   const [walletAddress, setWalletAddress] = useState("");
   const pathname = usePathname();
   const { login, logout, loggedIn, getAccounts }: any = useWeb3Auth();
+  console.log(loggedIn, "from navvvvvvvv");
   useEffect(() => {
     if (loggedIn) {
       const fetchAccounts = async () => {

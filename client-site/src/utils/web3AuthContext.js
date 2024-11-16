@@ -7,7 +7,6 @@ import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter";
 import { ethers } from "ethers";
 import RPC from "./ethersRPC"; // Ensure this is the correct path
 import { PushAPI, CONSTANTS } from "@pushprotocol/restapi";
-import { useRouter } from "next/navigation";
 
 const clientId =
   "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // Replace with your actual Web3Auth client ID
@@ -21,7 +20,6 @@ const chainConfig = {
   ticker: "ETH",
   tickerName: "Ethereum",
 };
-const router = useRouter();
 
 const Web3AuthContext = createContext(null);
 
@@ -33,7 +31,7 @@ export const Web3AuthProvider = ({ children }) => {
   const [walletAddress, setWalletAddress] = useState(null);
   const [pushAdmin, setPushAdmin] = useState(null);
   const [subUser, setSubUser] = useState(null);
-
+  console.log(process.env.NEXT_PUBLIC_WALLET_SECRET_KEY);
   useEffect(() => {
     const initWeb3Auth = async () => {
       try {
@@ -90,6 +88,7 @@ export const Web3AuthProvider = ({ children }) => {
   }, []);
 
   const adminAddress = "0x3CB2c0fA970B4152728dc578B18A7C9F4C8B6C48";
+
   const getAdminSigner = async () => {
     try {
       const adminProvider = new ethers.providers.JsonRpcProvider(
@@ -201,7 +200,6 @@ export const Web3AuthProvider = ({ children }) => {
           method: "POST",
           body: JSON.stringify({ loggedIn: true }),
         });
-        router.refresh();
       } catch (err) {
         console.error("Error wrapping provider in Web3Provider:", err);
       }
@@ -216,7 +214,6 @@ export const Web3AuthProvider = ({ children }) => {
       await web3auth.logout();
       setProvider(null);
       setLoggedIn(false);
-      router.refresh();
       // clear session cookies
     } catch (error) {
       console.error("Logout failed:", error);
