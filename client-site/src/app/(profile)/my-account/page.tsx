@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import MaxWrapper from "@/components/common/MaxWrapper";
 import { classNames } from "@/utils/common";
 import { useWeb3Auth } from "@/utils/Web3AuthContext";
-
+// add deploy
 const EcoTokenAddress = process.env.NEXT_PUBLIC_ECOTOKEN_ADDRESS;
 
 const AccountPage: React.FC = () => {
