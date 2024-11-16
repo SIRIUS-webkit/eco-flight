@@ -30,10 +30,11 @@ export default function Main() {
         <div className="py-10">
           <h3 className="font-bold">Explore project</h3>
           <p className="p2">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates
-            autem, cum sapiente mollitia porro vero quidem harum. Cumque quam
-            nemo error, illo, accusamus beatae, aut vero facilis praesentium
-            maiores aliquid?
+            Explore a diverse range of impactful projects designed to fight
+            climate change, from planting trees and building renewable energy
+            solutions to protecting wildlife and restoring oceans. Each project
+            is verified for its contribution to reducing carbon emissions,
+            ensuring your donations make a real difference.
           </p>
           <HomeProject />
         </div>

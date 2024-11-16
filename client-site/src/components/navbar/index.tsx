@@ -34,7 +34,7 @@ const Navbar: () => React.JSX.Element = () => {
             <Link href="/projects">
               <p
                 className={classNames(
-                  pathname === "projects" ? "text-primary" : "text-white",
+                  pathname === "/projects" ? "text-primary" : "text-white",
                   "p2 font-bold"
                 )}
               >

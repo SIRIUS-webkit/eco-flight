@@ -65,7 +65,7 @@ const HomeProject = () => {
                 className="w-full h-48 object-cover rounded-tl-lg rounded-tr-lg"
               />
 
-              <div className="card-body">
+              <div className="card-body p-4">
                 <h2 className="card-title">{project.name}</h2>
                 <p>{project.description}</p>
                 <p className="badge bg-primary text-white p4">
