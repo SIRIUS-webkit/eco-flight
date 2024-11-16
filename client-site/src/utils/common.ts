@@ -15,3 +15,13 @@ export const getAirportNameByIATA = (iata: string) => {
   const airport = airportData.find((airport) => airport.IATA === iata);
   return airport ? airport.Name : "Unknown Airport";
 };
+
+export function truncateString(str: string, maxLength: number): string {
+  if (!str) {
+    return "";
+  }
+  if (str?.length <= maxLength) {
+    return str;
+  }
+  return str?.slice(0, maxLength - 3) + "...";
+}

@@ -1,8 +1,10 @@
 "use client";
-import Button from "@/components/common/Button";
-import MaxWrapper from "@/components/common/MaxWrapper";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { ethers, Contract } from "ethers";
+import { useWeb3Auth } from "@/utils/Web3AuthContext";
+import Button from "@/components/common/Button";
+import GreenProject from "../../../../contract/artifacts/contracts/GreenProject.sol/GreenProject.json"; // ABI import
 
 interface FormInputs {
   name: string;
@@ -34,6 +36,28 @@ const CreateProjectForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [alertType, setAlertType] = useState<"success" | "error">();
+  const [greenProjectContract, setGreenProjectContract] =
+    useState<Contract | null>(null);
+  const { provider, loggedIn }: any = useWeb3Auth();
+
+  useEffect(() => {
+    const setup = async () => {
+      if (
+        provider &&
+        loggedIn &&
+        process.env.NEXT_PUBLIC_GREENPROJECT_ADDRESS
+      ) {
+        const signer = provider.getSigner();
+        const greenProject = new ethers.Contract(
+          process.env.NEXT_PUBLIC_GREENPROJECT_ADDRESS,
+          GreenProject.abi,
+          signer
+        );
+        setGreenProjectContract(greenProject);
+      }
+    };
+    setup();
+  }, [provider, loggedIn]);
 
   const handleImageUpload = async (file: File) => {
     const formData = new FormData();
@@ -88,12 +112,35 @@ const CreateProjectForm: React.FC = () => {
   };
 
   const handleFormSubmit: SubmitHandler<FormInputs> = async (data) => {
+    if (!greenProjectContract) {
+      setAlertMessage("GreenProject contract is not initialized.");
+      setAlertType("error");
+      return;
+    }
+
     try {
       setLoading(true);
       setAlertMessage(null);
 
-      // Assume contract interaction or API call here
-      console.log("Form Data Submitted:", data, mediaFile);
+      const projectInput = {
+        name: data.name,
+        description: data.description,
+        totalFundsRequired: ethers.utils.parseEther(
+          data.totalFundsRequired.toString()
+        ), // Convert to wei
+        category: data.category,
+        startDate: Math.floor(new Date(data.startDate).getTime() / 1000), // Unix timestamp
+        endDate: Math.floor(new Date(data.endDate).getTime() / 1000), // Unix timestamp
+        location: data.location,
+        minDonation: ethers.utils.parseEther(data.minDonation.toString()), // Convert to wei
+        maxDonation: ethers.utils.parseEther(data.maxDonation.toString()), // Convert to wei
+        mediaUrl: mediaFile?.url || "",
+      };
+
+      const tx = await greenProjectContract.createProject(projectInput);
+      console.log("Transaction sent:", tx.hash);
+      await tx.wait();
+      console.log("Transaction confirmed!");
 
       setAlertMessage("Project created successfully!");
       setAlertType("success");
@@ -101,9 +148,13 @@ const CreateProjectForm: React.FC = () => {
       reset();
       setMediaFile(null);
       setMediaPreview("");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating project:", error);
-      setAlertMessage("Failed to create project. Please try again.");
+      if (error instanceof Error) {
+        setAlertMessage(`Failed to create project: ${error.message}`);
+      } else {
+        setAlertMessage("Failed to create project. Please try again.");
+      }
       setAlertType("error");
     } finally {
       setLoading(false);
