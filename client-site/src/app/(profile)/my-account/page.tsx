@@ -5,9 +5,9 @@ import Link from "next/link";
 import { ethers, Contract } from "ethers";
 import EcoToken from "../../../../../contract/artifacts/contracts/EcoToken.sol/EcoToken.json";
 import { usePathname } from "next/navigation";
-import { useWeb3Auth } from "@/utils/Web3AuthContext";
 import MaxWrapper from "@/components/common/MaxWrapper";
 import { classNames } from "@/utils/common";
+import { useWeb3Auth } from "@/utils/Web3AuthContext";
 
 const EcoTokenAddress = process.env.NEXT_PUBLIC_ECOTOKEN_ADDRESS;
 
