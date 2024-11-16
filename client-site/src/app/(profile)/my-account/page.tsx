@@ -25,6 +25,7 @@ const AccountPage: React.FC = () => {
   const [stakeAmount, setStakeAmount] = useState<string>("");
   const { provider, loggedIn, initialized }: any = useWeb3Auth();
   const [errMsg, setErrMsg] = useState("");
+  const [pageLoading, setPageLoading] = useState<boolean>(false);
 
   const pathname = usePathname();
 
@@ -40,6 +41,7 @@ const AccountPage: React.FC = () => {
 
     const initializeContract = async () => {
       try {
+        setPageLoading(true);
         const signer = provider.getSigner();
         const contract = new ethers.Contract(
           EcoTokenAddress,
@@ -61,7 +63,9 @@ const AccountPage: React.FC = () => {
 
         const reward = await contract.calculateReward(signerAddress);
         setReward(ethers.utils.formatEther(reward));
+        setPageLoading(false);
       } catch (error) {
+        setPageLoading(false);
         console.error("Error initializing contract:", error);
       }
     };
@@ -155,77 +159,93 @@ const AccountPage: React.FC = () => {
         </div>
       </div>
 
-      {loggedIn ? (
-        <div className="overflow-x-auto">
-          <h4 className="font-semibold mb-4">Personal Information</h4>
-          <table className="table w-full border">
-            <tbody>
-              <tr>
-                <td className="font-bold p2">Wallet ID</td>
-                <td className="p2">{walletAddress || "-"}</td>
-              </tr>
-              <tr>
-                <td className="font-bold p2">Wallet Balance (ETH)</td>
-                <td className="p2">{ethBalance} ETH</td>
-              </tr>
-              <tr>
-                <td className="font-bold p2">ECO Token Balance</td>
-                <td className="p2">{ecoBalance} ECO</td>
-              </tr>
-              <tr>
-                <td className="font-bold p2">Staked Amount</td>
-                <td className="p2">
-                  {stakeDetails
-                    ? `${ethers.utils.formatEther(stakeDetails.amount)} ECO`
-                    : "0"}
-                  {stakeDetails && (
-                    <button
-                      className="btn btn-primary mt-4 ml-4 text-white"
-                      onClick={handleUnstake}
-                    >
-                      Unstake & Claim Rewards
-                    </button>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td className="font-bold p2">Reward</td>
-                <td className="p2">{reward} ECO</td>
-              </tr>
-              {!stakeDetails && (
-                <tr>
-                  <td className="font-bold p2">Enter Stake Amount (ECO)</td>
-                  <td>
-                    <input
-                      type="number"
-                      value={stakeAmount}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        if (parseFloat(value) < 0) {
-                          setErrMsg("Stake amount cannot be negative.");
-                        } else {
-                          setErrMsg("");
-                          setStakeAmount(value);
-                        }
-                      }}
-                      className="input input-bordered w-full max-w-xs"
-                      placeholder="0.0"
-                    />
-                    <button
-                      className="btn btn-primary mt-2 ml-4 text-white p2"
-                      onClick={handleStake}
-                    >
-                      Stake
-                    </button>
-                    {errMsg && <p className="p3 text-error">{errMsg}</p>}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {pageLoading ? (
+        <div>
+          <div className="py-10">
+            <div className="flex flex-col gap-4">
+              <div className="skeleton h-8 w-1/2"></div>
+              <div className="skeleton h-8 w-1/4"></div>
+              <div className="skeleton h-32 w-full"></div>
+              <div className="skeleton h-8 w-1/3"></div>
+            </div>
+          </div>
         </div>
       ) : (
-        <p>Please log in to view your account details.</p>
+        <>
+          {" "}
+          {loggedIn ? (
+            <div className="overflow-x-auto mb-10">
+              <h4 className="font-semibold mb-4">Personal Information</h4>
+              <table className="table w-full border">
+                <tbody>
+                  <tr>
+                    <td className="font-bold p2">Wallet ID</td>
+                    <td className="p2">{walletAddress || "-"}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold p2">Wallet Balance (ETH)</td>
+                    <td className="p2">{ethBalance} ETH</td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold p2">ECO Token Balance</td>
+                    <td className="p2">{ecoBalance} ECO</td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold p2">Staked Amount</td>
+                    <td className="p2">
+                      {stakeDetails
+                        ? `${ethers.utils.formatEther(stakeDetails.amount)} ECO`
+                        : "0"}
+                      {stakeDetails && (
+                        <button
+                          className="btn btn-primary mt-4 ml-4 text-white"
+                          onClick={handleUnstake}
+                        >
+                          Unstake & Claim Rewards
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-bold p2">Reward</td>
+                    <td className="p2">{reward} ECO</td>
+                  </tr>
+                  {!stakeDetails && (
+                    <tr>
+                      <td className="font-bold p2">Enter Stake Amount (ECO)</td>
+                      <td>
+                        <input
+                          type="number"
+                          value={stakeAmount}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (parseFloat(value) < 0) {
+                              setErrMsg("Stake amount cannot be negative.");
+                            } else {
+                              setErrMsg("");
+                              setStakeAmount(value);
+                            }
+                          }}
+                          className="input input-bordered w-full max-w-xs"
+                          placeholder="0.0"
+                        />
+                        <button
+                          className="btn btn-primary mt-2 ml-4 text-white p2"
+                          onClick={handleStake}
+                        >
+                          Stake
+                        </button>
+                        {errMsg && <p className="p3 text-error">{errMsg}</p>}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>Please log in to view your account details.</p>
+          )}
+        </>
       )}
     </MaxWrapper>
   );

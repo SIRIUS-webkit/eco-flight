@@ -6,6 +6,7 @@ import { ethers, Contract } from "ethers";
 import GreenProject from "../../../../../contract/artifacts/contracts/GreenProject.sol/GreenProject.json";
 import { useWeb3Auth } from "@/utils/Web3AuthContext";
 import MaxWrapper from "@/components/common/MaxWrapper";
+import { classNames } from "@/utils/common";
 
 interface Donation {
   projectName: string;
@@ -100,7 +101,15 @@ const DonationTabs: React.FC = () => {
               href={tab.path}
               className={`tab ${pathname === tab.path ? "tab-active" : ""}`}
             >
-              <p className="p2"> {tab.label}</p>
+              <p
+                className={classNames(
+                  pathname === tab.path ? "text-white" : "text-baack",
+                  "p2"
+                )}
+              >
+                {" "}
+                {tab.label}
+              </p>
             </Link>
           ))}
         </div>
@@ -129,8 +138,8 @@ const DonationTabs: React.FC = () => {
                       <span
                         className={`badge ${
                           donation.projectStatus === "Active"
-                            ? "badge-success"
-                            : "badge-secondary"
+                            ? "bg-primary text-white p2"
+                            : "bg-secondary text-white p2"
                         }`}
                       >
                         {donation.projectStatus}

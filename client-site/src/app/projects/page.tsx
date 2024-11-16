@@ -6,7 +6,6 @@ import { classNames, truncateString } from "@/utils/common";
 import { ethers } from "ethers";
 import { useWeb3Auth } from "@/utils/Web3AuthContext";
 import GreenProject from "../../../../contract/artifacts/contracts/GreenProject.sol/GreenProject.json";
-import { ClientPageRoot } from "next/dist/client/components/client-page";
 
 interface Project {
   id: number;
@@ -87,6 +86,7 @@ const ProjectsPage: React.FC = () => {
   const [donationAmount, setDonationAmount] = useState<number | "">("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [pageLoading, setPageLoading] = useState<boolean>(false);
 
   const fetchProjects = async () => {
     if (
@@ -106,9 +106,10 @@ const ProjectsPage: React.FC = () => {
       rpcProvider
     );
 
+    setPageLoading(true);
+
     try {
       const projectData = await contract.getProjects();
-      console.log(projectData);
       const formattedProjects: Project[] = projectData.map(
         (project: any, index: number) => {
           const endDate = new Date(project.details.endDate * 1000);
@@ -143,19 +144,20 @@ const ProjectsPage: React.FC = () => {
         }
       );
 
-      console.log("Newly Fetched Projects:", formattedProjects);
-
       // Merge existing and new projects, avoiding duplicates
-      setProjects((prevProjects) => {
-        const uniqueProjects = formattedProjects.filter(
-          (newProject) =>
-            !prevProjects.some(
-              (prevProject) => prevProject.id === newProject.id
-            )
-        );
-        return [...uniqueProjects, ...prevProjects];
-      });
+      setProjects([...formattedProjects, ...projects]);
+      // setProjects((prevProjects) => {
+      //   const uniqueProjects = formattedProjects.filter(
+      //     (newProject) =>
+      //       !prevProjects.some(
+      //         (prevProject) => prevProject.id === newProject.id
+      //       )
+      //   );
+      //   return [...uniqueProjects, ...prevProjects];
+      // });
+      setPageLoading(false);
     } catch (error) {
+      setPageLoading(false);
       console.error("Error fetching projects:", error);
     }
   };
@@ -225,81 +227,97 @@ const ProjectsPage: React.FC = () => {
     }
   };
 
+  const SkeletonCard = () => (
+    <div className="card rounded-lg w-full bg-base-100 shadow-md animate-pulse">
+      <div className="w-full h-48 bg-gray-300 rounded-tl-lg rounded-tr-lg"></div>
+      <div className="card-body p-4">
+        <div className="h-6 bg-gray-300 rounded mb-4"></div>
+        <div className="h-4 bg-gray-300 rounded mb-2 w-3/4"></div>
+        <div className="h-4 bg-gray-300 rounded mb-2 w-1/2"></div>
+        <div className="h-6 bg-gray-300 rounded mt-4"></div>
+      </div>
+    </div>
+  );
+
   return (
     <MaxWrapper>
       <h3 className="font-bold pt-10">Projects</h3>
       <div className="grid grid-cols-3 gap-8 py-10">
-        {projects.map((project) => {
-          const progressPercentage = Math.min(
-            (project.fundsRaised / project.totalFundsRequired) * 100,
-            100
-          );
+        {pageLoading
+          ? Array(3) // Display 3 skeleton cards
+              .fill(0)
+              .map((_, index) => <SkeletonCard key={index} />)
+          : projects.map((project) => {
+              const progressPercentage = Math.min(
+                (project.fundsRaised / project.totalFundsRequired) * 100,
+                100
+              );
 
-          return (
-            <div
-              key={project.id}
-              className="card rounded-lg w-full bg-base-100 shadow-md"
-            >
-              <img
-                src={project.mediaUrl}
-                alt={project.name}
-                className="w-full h-48 object-cover rounded-tl-lg rounded-tr-lg"
-              />
-              <div className="card-body p-4">
-                <h2 className="card-title">{project.name}</h2>
-                <p className="p3">
-                  {truncateString(project?.description, 120)}
-                </p>
-                <div className="flex flex-wrap gap-2 items-center">
-                  <span className="badge bg-primary text-white px-3 py-1 text-sm">
-                    {project.category}
-                  </span>
-                  <span className="badge bg-secondary text-white px-3 py-1 p3">
-                    {project.status}
-                  </span>
-                </div>
-                <div className="p3 text-gray-500">
-                  Location: {project.location}
-                </div>
-                <div className="p3 text-gray-500">
-                  Duration: {project.startDate} - {project.endDate}
-                </div>
-
-                <div className="mt-4">
-                  <div className="flex justify-between p3">
-                    <span>Funds Raised:</span>
-                    <span>
-                      {project.fundsRaised} ETH / {project.totalFundsRequired}{" "}
-                      ETH
-                    </span>
-                  </div>
-                  <progress
-                    className="progress progress-primary w-full"
-                    value={progressPercentage}
-                    max="100"
-                  ></progress>
-                </div>
-
+              return (
                 <div
-                  className={classNames(
-                    project.status === "Completed"
-                      ? "!opacity-0"
-                      : "opacity-100",
-                    "card-actions justify-end"
-                  )}
+                  key={project.id}
+                  className="card rounded-lg w-full bg-base-100 shadow-md"
                 >
-                  <button
-                    disabled={project.status === "Completed"}
-                    onClick={() => openModal(project)}
-                    className="btn btn-outline btn-secondary p2"
-                  >
-                    Donate
-                  </button>
+                  <img
+                    src={project.mediaUrl}
+                    alt={project.name}
+                    className="w-full h-48 object-cover rounded-tl-lg rounded-tr-lg"
+                  />
+                  <div className="card-body p-4">
+                    <h2 className="card-title">{project.name}</h2>
+                    <p className="p3">
+                      {truncateString(project?.description, 120)}
+                    </p>
+                    <div className="flex flex-wrap gap-2 items-center">
+                      <span className="badge bg-primary text-white px-3 py-1 text-sm">
+                        {project.category}
+                      </span>
+                      <span className="badge bg-secondary text-white px-3 py-1 p3">
+                        {project.status}
+                      </span>
+                    </div>
+                    <div className="p3 text-gray-500">
+                      Location: {project.location}
+                    </div>
+                    <div className="p3 text-gray-500">
+                      Duration: {project.startDate} - {project.endDate}
+                    </div>
+
+                    <div className="mt-4">
+                      <div className="flex justify-between p3">
+                        <span>Funds Raised:</span>
+                        <span>
+                          {project.fundsRaised} ETH /{" "}
+                          {project.totalFundsRequired} ETH
+                        </span>
+                      </div>
+                      <progress
+                        className="progress progress-primary w-full"
+                        value={progressPercentage}
+                        max="100"
+                      ></progress>
+                    </div>
+
+                    <div
+                      className={classNames(
+                        project.status === "Completed"
+                          ? "!opacity-0"
+                          : "opacity-100",
+                        "card-actions justify-end"
+                      )}
+                    >
+                      <button
+                        disabled={project.status === "Completed"}
+                        onClick={() => openModal(project)}
+                        className="btn btn-outline btn-secondary p2"
+                      >
+                        Donate
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              );
+            })}
       </div>
 
       {selectedProject && (

@@ -14,7 +14,8 @@ const defaultProjects = [
     endDate: "2024-12-31",
     fundsRaised: 10,
     totalFundsRequired: 50,
-    mediaUrl: "https://via.placeholder.com/300x200?text=Clean+Water",
+    mediaUrl:
+      "https://res.cloudinary.com/dgllpowes/image/upload/v1731672754/project_images/eziqmuyesqmhwpa2buyx.jpg",
   },
   {
     id: 2,
@@ -26,7 +27,8 @@ const defaultProjects = [
     endDate: "2024-06-01",
     fundsRaised: 30,
     totalFundsRequired: 100,
-    mediaUrl: "https://via.placeholder.com/300x200?text=Education",
+    mediaUrl:
+      "https://res.cloudinary.com/dgllpowes/image/upload/v1731672753/project_images/pxtsqam6hb6rqyp7gnsq.jpg",
   },
   {
     id: 3,
@@ -38,7 +40,8 @@ const defaultProjects = [
     endDate: "2025-01-01",
     fundsRaised: 70,
     totalFundsRequired: 120,
-    mediaUrl: "https://via.placeholder.com/300x200?text=Renewable+Energy",
+    mediaUrl:
+      "https://res.cloudinary.com/dgllpowes/image/upload/v1731672752/project_images/guuazirpyo1tn2ofvevh.jpg",
   },
 ];
 
@@ -103,7 +106,7 @@ const HomeProject = () => {
           cls="btn btn-primary p2 text-white"
           type="button"
           linkTag
-          link="/"
+          link="/projects"
         />
       </div>
     </>

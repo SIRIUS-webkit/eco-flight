@@ -59,20 +59,20 @@ const Home: () => React.JSX.Element = () => {
         your impact—all with the power of blockchain. Join us in making air
         travel sustainable, one flight at a time.
       </p>
-      <div className="flex xsmmx:flex-col justify-center items-center space-x-5 xsmmx:space-x-0 xsmmx:gap-5 py-8">
+      <div className="flex xsmmx:flex-col justify-center items-center space-x-5 xsmmx:space-x-0 xsmmx:gap-5 py-12">
         <Button
           text="Let's Donate"
           cls="btn btn-primary p2 text-white"
           type="button"
           linkTag
-          link="/"
+          link="/projects"
         />
         <Button
           text="Let's Calculate"
           cls="btn btn-primary p2 text-white"
           type="button"
           linkTag
-          link="/"
+          link="/carbon-offset"
         />
       </div>
     </>

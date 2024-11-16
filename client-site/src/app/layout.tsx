@@ -3,6 +3,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import ClientProvider from "@/components/common/ClientProvider";
+import Footer from "@/components/common/Footer";
 
 const space_gro = Space_Grotesk({
   subsets: ["latin"],
@@ -23,8 +24,15 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${space_gro.className}  antialiased`}>
         <ClientProvider>
-          <Navbar />
-          {children}
+          <main className="flex flex-col min-h-screen w-full">
+            <header className="flex-none">
+              <Navbar />
+            </header>
+            <section className="flex-grow">{children}</section>
+            <footer className="flex-none">
+              <Footer />
+            </footer>
+          </main>
         </ClientProvider>
       </body>
     </html>
