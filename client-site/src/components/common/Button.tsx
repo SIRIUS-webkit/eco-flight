@@ -9,6 +9,7 @@ interface ButtonProps {
   onClick?: () => void;
   linkTag?: boolean;
   link?: string;
+  disabled?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -18,6 +19,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   linkTag = false,
   link = "/",
+  disabled = false,
 }) => {
   return (
     <div>
@@ -26,7 +28,12 @@ const Button: React.FC<ButtonProps> = ({
           <p className={cls}>{text}</p>
         </Link>
       ) : (
-        <button type={type} onClick={onClick} className={cls}>
+        <button
+          type={type}
+          onClick={onClick}
+          className={cls}
+          disabled={disabled}
+        >
           <p className="p2 text-white">{text}</p>
         </button>
       )}
