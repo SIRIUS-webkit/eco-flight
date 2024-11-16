@@ -19,7 +19,7 @@ contract EcoToken is ERC20, Ownable {
     event TokensUnstaked(address indexed user, uint256 amount, uint256 reward);
     event MinterApproved(address indexed minter, bool status);
 
-    constructor() ERC20("EcoToken", "ECO") {
+    constructor() ERC20("EcoToken", "ECO") Ownable(msg.sender) {
         _mint(msg.sender, 1000000 * 10 ** decimals()); // Initial supply to contract owner
     }
 
@@ -38,10 +38,12 @@ contract EcoToken is ERC20, Ownable {
     // Function to allow users to stake tokens
     function stakeTokens(uint256 amount) external {
         require(balanceOf(msg.sender) >= amount, "Insufficient balance to stake");
-        require(stakes[msg.sender].amount == 0, "Already staking");
+        require(stakes[msg.sender].amount == 0, "Already staking"); // One active stake at a time
 
+        // Transfer tokens to the contract for staking
         _transfer(msg.sender, address(this), amount);
 
+        // Record staking details
         stakes[msg.sender] = Stake({
             amount: amount,
             startTime: block.timestamp
@@ -55,9 +57,9 @@ contract EcoToken is ERC20, Ownable {
         Stake memory userStake = stakes[user];
         if (userStake.amount == 0) return 0;
 
-        uint256 stakingDuration = block.timestamp - userStake.startTime;
-        uint256 annualReward = (userStake.amount * rewardRate) / 100;
-        uint256 reward = (annualReward * stakingDuration) / 365 days;
+        uint256 stakingDuration = block.timestamp - userStake.startTime; // Time in seconds
+        uint256 annualReward = (userStake.amount * rewardRate) / 100; // Annual reward based on rewardRate
+        uint256 reward = (annualReward * stakingDuration) / 365 days; // Pro-rated reward
 
         return reward;
     }
@@ -69,9 +71,11 @@ contract EcoToken is ERC20, Ownable {
 
         uint256 reward = calculateReward(msg.sender);
 
+        // Clear staking details
         stakes[msg.sender].amount = 0;
         stakes[msg.sender].startTime = 0;
 
+        // Transfer the staked amount + reward back to the user
         _transfer(address(this), msg.sender, userStake.amount + reward);
         emit TokensUnstaked(msg.sender, userStake.amount, reward);
     }

@@ -50,8 +50,9 @@ const GreenProjectComponent = () => {
 
   const checkMinterApproval = async (greenProjectAddress, ecoTokenContract) => {
     try {
-      const isApproved = await ecoTokenContract.approvedMinters(
-        greenProjectAddress
+      const isApproved = await ecoTokenContract.setMinter(
+        greenProjectAddress,
+        true
       );
       setIsMinterApproved(isApproved);
     } catch (error) {

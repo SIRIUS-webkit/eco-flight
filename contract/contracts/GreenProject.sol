@@ -56,7 +56,7 @@ contract GreenProject is Ownable {
     event ProjectCompleted(uint256 projectId);
      event ProjectEndDateUpdated(uint256 projectId, uint256 newEndDate);
 
-    constructor(address _ecoToken, address _adminWallet)  {
+    constructor(address _ecoToken, address _adminWallet) Ownable(msg.sender) {
         ecoToken = EcoToken(_ecoToken);
         adminWallet = _adminWallet;
     }

@@ -7,6 +7,7 @@ import EcoToken from "../../../../../contract/artifacts/contracts/EcoToken.sol/E
 import { usePathname } from "next/navigation";
 import { useWeb3Auth } from "@/utils/Web3AuthContext";
 import MaxWrapper from "@/components/common/MaxWrapper";
+import { classNames } from "@/utils/common";
 
 const EcoTokenAddress = process.env.NEXT_PUBLIC_ECOTOKEN_ADDRESS;
 
@@ -140,7 +141,15 @@ const AccountPage: React.FC = () => {
               href={tab.path}
               className={`tab ${pathname === tab.path ? "tab-active" : ""}`}
             >
-              <p className="p2"> {tab.label}</p>
+              <p
+                className={classNames(
+                  pathname === tab.path ? "text-white" : "text-baack",
+                  "p2"
+                )}
+              >
+                {" "}
+                {tab.label}
+              </p>
             </Link>
           ))}
         </div>
