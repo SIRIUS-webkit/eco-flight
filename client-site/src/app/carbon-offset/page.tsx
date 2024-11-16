@@ -1,8 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { airportData } from "../../utils/airport";
 import Button from "@/components/common/Button";
+import CarbonEmission from "../../../../contract/artifacts/contracts/CarbonEmission.sol/CarbonEmission.json";
+import { ethers, Contract } from "ethers";
+import { useWeb3Auth } from "@/utils/Web3AuthContext";
+import { extractIATACode, getAirportNameByIATA } from "@/utils/common";
+import Link from "next/link";
 
 interface FormInputs {
   departure: string;
@@ -40,8 +45,33 @@ const CarbonEmissionPage: React.FC = () => {
   const [focusedField, setFocusedField] = useState<
     "departure" | "destination" | null
   >(null);
-  const [result, setResult] = useState<EmissionResult | null>(null);
+  const [result, setResult] = useState<EmissionResult | null>({
+    departure: "SIN",
+    destination: "BKK",
+    passengers: 1,
+    tripType: "direct",
+    emission: 100,
+  });
   const [loading, setLoading] = useState<boolean>(false);
+  const [carbonEmissionContract, setCarbonEmissionContract] =
+    useState<Contract | null>(null);
+  const { provider, loggedIn }: any = useWeb3Auth();
+
+  useEffect(() => {
+    if (
+      provider &&
+      loggedIn &&
+      process.env.NEXT_PUBLIC_CARBONEMISSION_ADDRESS
+    ) {
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        process.env.NEXT_PUBLIC_CARBONEMISSION_ADDRESS,
+        CarbonEmission.abi,
+        signer
+      );
+      setCarbonEmissionContract(contract);
+    }
+  }, [provider, loggedIn]);
 
   const searchAirports = (
     query: string,
@@ -64,11 +94,6 @@ const CarbonEmissionPage: React.FC = () => {
     setFocusedField(field);
   };
 
-  const extractIATACode = (airportString: string): string | null => {
-    const match = airportString.match(/\(([^)]+)\)/);
-    return match ? match[1] : null;
-  };
-
   const handleSelectAirport = (
     airport: Airport,
     field: "departure" | "destination"
@@ -81,71 +106,83 @@ const CarbonEmissionPage: React.FC = () => {
   const sendEmissionDataToContract = async (
     dpIATA: string,
     desIATA: string,
-    passenger: number,
+    passengers: number,
     tripType: string,
     emissionRate: number
   ) => {
+    if (!carbonEmissionContract) {
+      console.error("Contract not initialized.");
+      return;
+    }
+
     try {
       setLoading(true);
+
+      const tx = await carbonEmissionContract.requestEmissionData(
+        dpIATA,
+        desIATA,
+        ethers.BigNumber.from(passengers),
+        ethers.BigNumber.from(emissionRate),
+        tripType
+      );
+
+      console.log("Transaction sent:", tx);
+
+      await tx.wait();
+      console.log("Transaction mined");
 
       setResult({
         departure: dpIATA,
         destination: desIATA,
-        passengers: passenger,
+        passengers,
         tripType,
         emission: emissionRate,
       });
     } catch (error) {
-      console.error("Error calculating carbon emission:", error);
+      console.error("Error sending emission data to contract:", error);
     } finally {
-      reset({
-        departure: "",
-        destination: "",
-        passengers: undefined,
-        tripType: "direct",
-      });
+      reset();
       setLoading(false);
     }
   };
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-    if (data.departure && data.destination) {
-      const departureIATA = extractIATACode(data.departure);
-      const destinationIATA = extractIATACode(data.destination);
-
-      if (!departureIATA || !destinationIATA) {
-        alert("Invalid airport selection. Please choose from the dropdown.");
-        return;
-      }
-
-      const apiUrl = `https://carbon-emission-nine.vercel.app/api/calculate-emission?departure=${departureIATA}&destination=${destinationIATA}&passengers=${data.passengers}&tripType=${data.tripType}`;
-
-      try {
-        const response = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`API call failed with status: ${response.status}`);
-        }
-
-        const emissionData = await response.json();
-
-        await sendEmissionDataToContract(
-          departureIATA,
-          destinationIATA,
-          data.passengers,
-          data.tripType,
-          emissionData.data.emission
-        );
-      } catch (error) {
-        console.error("Error fetching emission data:", error);
-      }
-    } else {
+    if (!data.departure || !data.destination) {
       alert("Please select both departure and destination airports.");
+      return;
+    }
+
+    const departureIATA = extractIATACode(data.departure);
+    const destinationIATA = extractIATACode(data.destination);
+
+    if (!departureIATA || !destinationIATA) {
+      alert("Invalid airport selection. Please choose from the dropdown.");
+      return;
+    }
+
+    const apiUrl = `https://carbon-emission-nine.vercel.app/api/calculate-emission?departure=${departureIATA}&destination=${destinationIATA}&passengers=${data.passengers}&tripType=${data.tripType}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed with status: ${response.status}`);
+      }
+
+      const emissionData = await response.json();
+
+      await sendEmissionDataToContract(
+        departureIATA,
+        destinationIATA,
+        data.passengers,
+        data.tripType,
+        emissionData.data.emission
+      );
+    } catch (error) {
+      console.error("Error fetching emission data:", error);
     }
   };
 
@@ -155,9 +192,7 @@ const CarbonEmissionPage: React.FC = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Departure Airport Search */}
         <div className="form-control">
-          <label className="label">
-            <span className="p2">Departure Airport</span>
-          </label>
+          <label className="label">Departure Airport</label>
           <input
             type="text"
             {...register("departure", { required: "Departure is required" })}
@@ -167,7 +202,7 @@ const CarbonEmissionPage: React.FC = () => {
             placeholder="Search by name, city, country, or IATA code"
           />
           {errors.departure && (
-            <p className="text-red-500 p4">{errors.departure.message}</p>
+            <p className="text-red-500">{errors.departure.message}</p>
           )}
           {focusedField === "departure" && (
             <ul className="bg-white shadow rounded">
@@ -187,9 +222,7 @@ const CarbonEmissionPage: React.FC = () => {
 
         {/* Destination Airport Search */}
         <div className="form-control">
-          <label className="label">
-            <span className="p2">Destination Airport</span>
-          </label>
+          <label className="label">Destination Airport</label>
           <input
             type="text"
             {...register("destination", {
@@ -201,7 +234,7 @@ const CarbonEmissionPage: React.FC = () => {
             placeholder="Search by name, city, country, or IATA code"
           />
           {errors.destination && (
-            <p className="text-red-500 p4">{errors.destination.message}</p>
+            <p className="text-red-500">{errors.destination.message}</p>
           )}
           {focusedField === "destination" && (
             <ul className="bg-white shadow rounded">
@@ -221,9 +254,7 @@ const CarbonEmissionPage: React.FC = () => {
 
         {/* Passengers */}
         <div className="form-control">
-          <label className="label">
-            <span className="p2">Number of Passengers</span>
-          </label>
+          <label className="label">Number of Passengers</label>
           <input
             type="number"
             {...register("passengers", {
@@ -234,15 +265,13 @@ const CarbonEmissionPage: React.FC = () => {
             placeholder="Enter number of passengers"
           />
           {errors.passengers && (
-            <p className="text-red-500 p4">{errors.passengers.message}</p>
+            <p className="text-red-500">{errors.passengers.message}</p>
           )}
         </div>
 
         {/* Trip Type */}
         <div className="form-control">
-          <label className="label">
-            <span className="p2">Trip Type</span>
-          </label>
+          <label className="label">Trip Type</label>
           <select
             {...register("tripType", { required: "Trip type is required" })}
             className="select select-bordered"
@@ -251,15 +280,17 @@ const CarbonEmissionPage: React.FC = () => {
             <option value="round">Round Trip</option>
           </select>
           {errors.tripType && (
-            <p className="text-red-500 p4">{errors.tripType.message}</p>
+            <p className="text-red-500">{errors.tripType.message}</p>
           )}
         </div>
+
+        {/* Submit Button */}
         <div className="form-control justify-end items-end">
           <Button
             type="submit"
             cls="btn btn-primary"
             disabled={loading}
-            text={loading ? "Calculating" : "Calculate Emission"}
+            text={loading ? "Calculating..." : "Calculate Emission"}
           />
         </div>
       </form>
@@ -267,13 +298,25 @@ const CarbonEmissionPage: React.FC = () => {
       {/* Display Result */}
       {result && (
         <div className="mt-6 p-4 bg-base-100 rounded shadow">
-          <h2 className="text-xl font-bold">Emission Result</h2>
-          <p>
-            From {result.departure} to {result.destination}:
+          <h5 className="font-bold">Emission Result</h5>
+          <p className="p2">
+            From: {getAirportNameByIATA(result.departure)} to{" "}
+            {getAirportNameByIATA(result.destination)}
           </p>
-          <p className="text-lg">Passengers: {result.passengers}</p>
-          <p>Trip Type: {result.tripType}</p>
-          <p>Carbon Emission: {(result.emission / 100).toFixed(2)} kg CO₂</p>
+          <p className="p2">Passengers: {result.passengers}</p>
+          <p className="p2">
+            Trip Type: {result.tripType === "direct" ? "One-Way" : "Round-Trip"}
+          </p>
+          <p className="p2">
+            Carbon Emission: {(result.emission / 100).toFixed(2)} kg CO₂
+          </p>
+          <p className="p3 mt-4">
+            You may donate to offset your carbon emission{" "}
+            <Link href="/projects" className="text-info underline">
+              here
+            </Link>
+            .
+          </p>
         </div>
       )}
     </div>

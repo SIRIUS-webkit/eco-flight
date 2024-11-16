@@ -103,7 +103,7 @@ const Navbar: () => React.JSX.Element = () => {
               className="dropdown-content menu p-2 shadow bg-base-100 rounded-md w-52 z-[999]"
             >
               <li>
-                <Link href="/account" className="cursor-pointer">
+                <Link href="/my-account" className="cursor-pointer">
                   <p className="p2">Profile</p>
                 </Link>
               </li>
