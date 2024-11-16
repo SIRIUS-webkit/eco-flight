@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -25,11 +26,9 @@ interface Project {
 
 const MyProjectTabs: React.FC = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const { provider, loggedIn }: any = useWeb3Auth();
   const [pageLoading, setPageLoading] = useState(false);
   const [userProjects, setUserProjects] = useState<Project[]>([]);
-  const [userAddress, setUserAddress] = useState<string>("");
 
   useEffect(() => {
     const fetchUserProjects = async () => {
@@ -40,7 +39,6 @@ const MyProjectTabs: React.FC = () => {
 
       const signer = provider.getSigner();
       const address = await signer.getAddress();
-      setUserAddress(address);
 
       const contract = new ethers.Contract(
         process.env.NEXT_PUBLIC_GREENPROJECT_ADDRESS!,

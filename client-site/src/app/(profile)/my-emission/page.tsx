@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -21,7 +22,6 @@ interface Emission {
 
 const MyEmissionTabs: React.FC = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const { provider, loggedIn }: any = useWeb3Auth();
 
   const [userEmission, setUserEmission] = useState<Emission[]>([]);

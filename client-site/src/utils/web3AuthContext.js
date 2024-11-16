@@ -5,8 +5,9 @@ import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter";
 import { ethers } from "ethers";
-// import { PushAPI, CONSTANTS } from "@pushprotocol/restapi";
 import RPC from "./ethersRPC"; // Ensure this is the correct path
+import { PushAPI, CONSTANTS } from "@pushprotocol/restapi";
+import { useRouter } from "next/navigation";
 
 const clientId =
   "BPi5PB_UiIZ-cPz1GtV5i1I2iOSOHuimiXBI0e-Oe_u6X3oVAbCiAZOTEBtTXw4tsluTITPqA8zMsfxIKMjiqNQ"; // Replace with your actual Web3Auth client ID
@@ -20,6 +21,7 @@ const chainConfig = {
   ticker: "ETH",
   tickerName: "Ethereum",
 };
+const router = useRouter();
 
 const Web3AuthContext = createContext(null);
 
@@ -29,7 +31,8 @@ export const Web3AuthProvider = ({ children }) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [walletAddress, setWalletAddress] = useState(null);
-  const [pushUser, setPushUser] = useState(null);
+  const [pushAdmin, setPushAdmin] = useState(null);
+  const [subUser, setSubUser] = useState(null);
 
   useEffect(() => {
     const initWeb3Auth = async () => {
@@ -73,7 +76,7 @@ export const Web3AuthProvider = ({ children }) => {
           setLoggedIn(true);
 
           // Initialize Push Protocol after successful login
-          // await initializePushProtocol(signer);
+          await initializePushProtocol(ethersProvider);
         }
 
         setInitialized(true);
@@ -86,26 +89,67 @@ export const Web3AuthProvider = ({ children }) => {
     initWeb3Auth();
   }, []);
 
-  //   const initializePushProtocol = async (signer) => {
-  //     try {
-  //       const user = await PushAPI.initialize(signer, {
-  //         env: CONSTANTS.ENV.STAGING, // Use STAGING or PROD
-  //       });
-  //       console.log("Push Protocol User Initialized:", user);
-  //       setPushUser(user);
-  //     } catch (error) {
-  //       if (error.response) {
-  //         // The request was made, but the server responded with a status code
-  //         console.error("Push Protocol API Response Error:", error.response.data);
-  //       } else if (error.request) {
-  //         // The request was made but no response was received
-  //         console.error("Push Protocol No Response Error:", error.request);
-  //       } else {
-  //         // Something else caused the error
-  //         console.error("Push Protocol Initialization Error:", error.message);
-  //       }
-  //     }
-  //   };
+  const adminAddress = "0x3CB2c0fA970B4152728dc578B18A7C9F4C8B6C48";
+  const getAdminSigner = async () => {
+    try {
+      const adminProvider = new ethers.providers.JsonRpcProvider(
+        `https://sepolia.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`
+      );
+      const adminWallet = new ethers.Wallet(
+        process.env.NEXT_PUBLIC_WALLET_SECRET_KEY,
+        adminProvider
+      );
+
+      if (adminWallet.address.toLowerCase() !== adminAddress.toLowerCase()) {
+        throw new Error("Admin wallet address mismatch");
+      }
+
+      return adminWallet;
+    } catch (error) {
+      console.error("Error getting admin signer:", error);
+      throw error;
+    }
+  };
+
+  const initializePushProtocol = async (ethProvider) => {
+    try {
+      const adminSigner = await getAdminSigner();
+      const admin = await PushAPI.initialize(adminSigner, {
+        env: CONSTANTS.ENV.STAGING,
+      });
+      setPushAdmin(admin);
+      const subUser = await admin.notification.subscriptions();
+      setSubUser(subUser);
+      // Automatically add delegate after initialization
+      // const info = await admin.channel.info();
+    } catch (error) {
+      console.error("Error initializing Push Protocol:", error);
+    }
+  };
+
+  const sendNotification = async (title, body) => {
+    if (!pushAdmin || !walletAddress) {
+      console.error("Push Protocol not initialized");
+      return;
+    }
+    try {
+      await pushAdmin.channel.send(["*"], {
+        notification: {
+          title: "Carbon emissiont was calaculated.",
+          body: "Explore offset projects to neutralize your footprint and contribute to a sustainable future!",
+        },
+      });
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  };
+
+  async function subScribeChannel() {
+    const response = await pushAdmin.notification.subscribe(
+      `eip155:11155111:${walletAddress}`
+    );
+    console.log(response);
+  }
 
   //   const sendPushNotification = async (title, body) => {
   //     if (!pushUser) {
@@ -157,6 +201,7 @@ export const Web3AuthProvider = ({ children }) => {
           method: "POST",
           body: JSON.stringify({ loggedIn: true }),
         });
+        router.refresh();
       } catch (err) {
         console.error("Error wrapping provider in Web3Provider:", err);
       }
@@ -171,6 +216,7 @@ export const Web3AuthProvider = ({ children }) => {
       await web3auth.logout();
       setProvider(null);
       setLoggedIn(false);
+      router.refresh();
       // clear session cookies
     } catch (error) {
       console.error("Logout failed:", error);
@@ -198,6 +244,11 @@ export const Web3AuthProvider = ({ children }) => {
     return balance;
   };
 
+  async function getNotis() {
+    const inboxNotifications = await pushAdmin.notification.list("INBOX");
+    return inboxNotifications;
+  }
+
   const signMessage = async () => {
     if (!provider) return console.warn("Provider not initialized");
     const message = await RPC.signMessage(provider);
@@ -224,7 +275,12 @@ export const Web3AuthProvider = ({ children }) => {
         getBalance,
         signMessage,
         sendTransaction,
-        pushUser,
+        pushAdmin,
+        sendNotification,
+        subScribeChannel,
+        subUser,
+        subScribeChannel,
+        getNotis,
       }}
     >
       {children}

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@pushprotocol/restapi": "^1.7.29",
     "@web3auth/base": "^9.3.0",
     "@web3auth/default-evm-adapter": "^9.3.0",
     "@web3auth/ethereum-provider": "^9.3.0",
