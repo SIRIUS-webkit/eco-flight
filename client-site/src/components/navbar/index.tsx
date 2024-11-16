@@ -57,10 +57,10 @@ const Navbar: () => React.JSX.Element = () => {
             </Link>
           </li>
           <li>
-            <Link href="/emission" className="text-white">
+            <Link href="/carbon-offset" className="text-white">
               <p
                 className={classNames(
-                  pathname === "projects" ? "text-primary" : "text-white",
+                  pathname === "/carbon-offset" ? "text-primary" : "text-white",
                   "p2 font-bold"
                 )}
               >
