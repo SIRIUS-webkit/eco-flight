@@ -45,13 +45,7 @@ const CarbonEmissionPage: React.FC = () => {
   const [focusedField, setFocusedField] = useState<
     "departure" | "destination" | null
   >(null);
-  const [result, setResult] = useState<EmissionResult | null>({
-    departure: "SIN",
-    destination: "BKK",
-    passengers: 1,
-    tripType: "direct",
-    emission: 100,
-  });
+  const [result, setResult] = useState<EmissionResult | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [carbonEmissionContract, setCarbonEmissionContract] =
     useState<Contract | null>(null);
