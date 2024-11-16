@@ -89,6 +89,7 @@ export default {
         zic: "#09090b",
         ether: "#fe4e5b",
         white: "#ffffff",
+        "light-green": "#eafaf1",
       },
     },
     screens: {
@@ -130,6 +131,7 @@ export default {
           success: "#388e3c", // Dark green for success messages
           warning: "#ffc107", // Yellow-orange for warnings
           error: "#f44336", // Bright red for errors
+          "light-green": "#eafaf1",
         },
       },
     ],

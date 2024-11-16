@@ -27,7 +27,7 @@ const Button: React.FC<ButtonProps> = ({
         </Link>
       ) : (
         <button type={type} onClick={onClick} className={cls}>
-          <p className="p2">{text}</p>
+          <p className="p2 text-white">{text}</p>
         </button>
       )}
     </div>

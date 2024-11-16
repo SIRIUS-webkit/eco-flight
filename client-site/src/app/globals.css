@@ -16,44 +16,44 @@
 
 @layer base {
   h1 {
-    @apply text-4xl text-white mdmx:text-3xl;
+    @apply text-4xl text-black mdmx:text-3xl;
   }
   h2 {
-    @apply text-4xl text-white;
+    @apply text-4xl text-black;
   }
 
   h3 {
-    @apply text-3xl text-white mdmx:text-2xl;
+    @apply text-3xl text-black mdmx:text-2xl;
   }
   h4 {
-    @apply text-2xl text-white;
+    @apply text-2xl text-black;
   }
 
   h5 {
-    @apply text-xl text-white;
+    @apply text-xl text-black;
   }
   h6 {
-    @apply text-lg text-white;
+    @apply text-lg text-black;
   }
 
   .p1 {
-    @apply text-md text-white;
+    @apply text-md text-black;
   }
 
   .p2 {
-    @apply text-base text-white;
+    @apply text-base text-black;
   }
 
   .p3 {
-    @apply text-sm text-white;
+    @apply text-sm text-black;
   }
 
   .p4 {
-    @apply text-xsm text-white;
+    @apply text-xsm text-black;
   }
 
   .p5 {
-    @apply text-xxsm text-white;
+    @apply text-xxsm text-black;
   }
 
   body {
