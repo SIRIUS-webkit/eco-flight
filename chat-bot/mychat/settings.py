@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ayw_g5ywzosh-ll5($378mhv%69-54ko&2-^aeplnunxpx8z#s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '103.197.196.174', 'chatbot.ebpmyanmar.site']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '5b79-2001-44c8-4514-a53c-88cc-c94-eca1-3f1a.ngrok-free.app']
 
 
 # Application definition

@@ -135,7 +135,7 @@
     "documents": [
       {
         "question": "What blockchain does CarbonTrack use?",
-        "answer": "CarbonTrack is built on Ethereum-compatible blockchains and accepts donations in ETH or MATIC."
+        "answer": "CarbonTrack is built on Ethereum-compatible blockchains and accepts donations in ETH."
       },
       {
         "question": "Why do I need a Web3 wallet?",
@@ -156,7 +156,7 @@
     "documents": [
       {
         "question": "What should I do if my transaction fails?",
-        "answer": "Ensure your wallet is funded with enough ETH or MATIC for gas fees. If issues persist, contact CarbonTrack support."
+        "answer": "Ensure your wallet is funded with enough ETH for gas fees. If issues persist, contact CarbonTrack support."
       },
       {
         "question": "Why is my carbon footprint not showing?",
