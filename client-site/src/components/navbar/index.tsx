@@ -5,14 +5,29 @@ import Image from "next/image";
 import { classNames } from "@/utils/common";
 import { usePathname } from "next/navigation";
 import Button from "../common/Button";
+import { useWeb3Auth } from "@/utils/Web3AuthContext";
 
 const Navbar: () => React.JSX.Element = () => {
-  const loggedIn = false;
   const [walletAddress, setWalletAddress] = useState("");
   const pathname = usePathname();
-  console.log(pathname);
-  const login = () => {};
-  const logout = () => {};
+  const { login, logout, loggedIn, getAccounts }: any = useWeb3Auth();
+  useEffect(() => {
+    if (loggedIn) {
+      const fetchAccounts = async () => {
+        try {
+          const accounts = await getAccounts();
+          if (accounts) {
+            setWalletAddress(accounts);
+          }
+        } catch (error) {
+          console.error("Failed to fetch accounts:", error);
+        }
+      };
+      fetchAccounts();
+    } else {
+      setWalletAddress("");
+    }
+  }, [loggedIn, getAccounts]);
 
   return (
     <div className="navbar px-9 bg-[#09090b]">
@@ -85,13 +100,17 @@ const Navbar: () => React.JSX.Element = () => {
             </label>
             <ul
               tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-100 rounded-md w-52"
+              className="dropdown-content menu p-2 shadow bg-base-100 rounded-md w-52 z-[999]"
             >
               <li>
-                <Link href="/account">Profile</Link>
+                <Link href="/account" className="cursor-pointer">
+                  <p className="p2">Profile</p>
+                </Link>
               </li>
               <li>
-                <a onClick={logout}>Log Out</a>
+                <a className="cursor-pointer p2" onClick={logout}>
+                  Log Out
+                </a>
               </li>
             </ul>
           </div>
