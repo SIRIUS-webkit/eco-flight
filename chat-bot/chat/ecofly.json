@@ -1,0 +1,175 @@
+[
+  {
+    "Title": "General Questions",
+    "documents": [
+      {
+        "question": "What is Ecofly?",
+        "answer": "Ecofly is a Web3 platform that helps users track their carbon footprint from flights, offset emissions by donating to green projects, and earn EcoTokens as a reward."
+      },
+      {
+        "question": "How does Ecofly work?",
+        "answer": "Users register with a Web3 wallet, input their flight data to calculate emissions, donate to offset their footprint, and earn EcoTokens. All interactions are recorded on-chain for transparency."
+      },
+      {
+        "question": "What is an EcoToken?",
+        "answer": "An EcoToken is a reward token given to users who donate to green projects. It represents the user’s contribution to environmental initiatives."
+      },
+      {
+        "question": "What is a green project on CarbonTrack?",
+        "answer": "Green projects are initiatives focused on sustainability, such as tree planting or renewable energy, to which users can donate to offset their carbon footprint."
+      }
+    ]
+  },
+  {
+    "Title": "User Registration and Login",
+    "documents": [
+      {
+        "question": "How do I register on Ecofly?",
+        "answer": "You can register by connecting your Web3 wallet, such as via Web3Auth. This wallet will be used for all interactions on the platform."
+      },
+      {
+        "question": "Can I use my existing crypto wallet for registration?",
+        "answer": "Yes, you can connect an existing Web3 wallet for use on CarbonTrack."
+      },
+      {
+        "question": "Is my account information secure on Ecofly?",
+        "answer": "Yes, CarbonTrack leverages blockchain technology, ensuring security and transparency through encrypted and immutable records."
+      }
+    ]
+  },
+  {
+    "Title": "Flight Data and Emission Calculation",
+    "documents": [
+      {
+        "question": "How do I input my flight data?",
+        "answer": "Go to your dashboard, select \"Enter Flight Data,\" and input details like flight distance and the number of passengers."
+      },
+      {
+        "question": "How is my carbon footprint calculated?",
+        "answer": "Based on your flight data, the CarbonEmission smart contract calculates the carbon footprint using verified external data via Chainlink Oracles."
+      },
+      {
+        "question": "Can I see my cumulative carbon footprint?",
+        "answer": "Yes, your dashboard shows your cumulative carbon emissions from all flights you've logged."
+      }
+    ]
+  },
+  {
+    "Title": "Offsetting Carbon Emissions",
+    "documents": [
+      {
+        "question": "How can I offset my carbon footprint?",
+        "answer": "You can offset your emissions by donating to a green project. This helps fund initiatives that reduce environmental impact."
+      },
+      {
+        "question": "What happens when I donate?",
+        "answer": "Your donation goes to the selected green project, helping fund its activities. In return, you receive EcoTokens as a reward."
+      },
+      {
+        "question": "What types of projects can I donate to?",
+        "answer": "CarbonTrack offers various green projects focused on activities like tree planting, renewable energy, and conservation."
+      },
+      {
+        "question": "Is there a minimum donation amount?",
+        "answer": "There’s no fixed minimum. You can donate any amount, but larger donations yield more EcoTokens."
+      }
+    ]
+  },
+  {
+    "Title": "EcoTokens and Rewards",
+    "documents": [
+      {
+        "question": "What are EcoTokens used for?",
+        "answer": "EcoTokens represent your contribution to environmental sustainability. You can collect them as rewards and show your eco-friendly support."
+      },
+      {
+        "question": "How are EcoTokens calculated?",
+        "answer": "EcoTokens are calculated based on your donation size. For example, each 1 ETH donation earns 10 EcoTokens."
+      },
+      {
+        "question": "Where can I view my EcoToken balance?",
+        "answer": "Your EcoToken balance is available on your dashboard, showing the total tokens earned from your contributions."
+      }
+    ]
+  },
+  {
+    "Title": "Green Projects and Donations",
+    "documents": [
+      {
+        "question": "How do I browse green projects?",
+        "answer": "Go to the “Green Projects” section, where you’ll see each project's purpose, required funding, and funds raised so far."
+      },
+      {
+        "question": "How can I donate to a green project?",
+        "answer": "Select a project, specify your donation amount in ETH or MATIC, and confirm the transaction through your wallet."
+      },
+      {
+        "question": "Where do my donations go?",
+        "answer": "Donations are transferred to the selected project’s smart contract wallet, allowing project owners to use funds directly for sustainability initiatives."
+      },
+      {
+        "question": "Can I donate to multiple projects?",
+        "answer": "Yes, you can support as many green projects as you wish, with each donation contributing to your total EcoToken rewards."
+      }
+    ]
+  },
+  {
+    "Title": "Tracking and Transparency",
+    "documents": [
+      {
+        "question": "Is my donation tracked?",
+        "answer": "Yes, all donations are tracked on-chain, allowing full transparency. You can view all past transactions, carbon offsets, and earned rewards."
+      },
+      {
+        "question": "How can I track my environmental impact?",
+        "answer": "Your dashboard displays your carbon footprint, amount donated, and CO₂ offset over time."
+      },
+      {
+        "question": "Is CarbonTrack data publicly verifiable?",
+        "answer": "Yes, since all transactions are stored on the blockchain, anyone can verify the data for full transparency."
+      }
+    ]
+  },
+  {
+    "Title": "Technical Details",
+    "documents": [
+      {
+        "question": "What blockchain does CarbonTrack use?",
+        "answer": "CarbonTrack is built on Ethereum-compatible blockchains and accepts donations in ETH or MATIC."
+      },
+      {
+        "question": "Why do I need a Web3 wallet?",
+        "answer": "A Web3 wallet enables secure, on-chain interactions, including logging in, donating, and receiving EcoTokens."
+      },
+      {
+        "question": "What is Chainlink used for?",
+        "answer": "Chainlink Oracles verify carbon data from external sources, ensuring accurate emission calculations."
+      },
+      {
+        "question": "Can I connect multiple wallets?",
+        "answer": "At the moment, CarbonTrack allows only one wallet per account for simplicity and security."
+      }
+    ]
+  },
+  {
+    "Title": "Troubleshooting",
+    "documents": [
+      {
+        "question": "What should I do if my transaction fails?",
+        "answer": "Ensure your wallet is funded with enough ETH or MATIC for gas fees. If issues persist, contact CarbonTrack support."
+      },
+      {
+        "question": "Why is my carbon footprint not showing?",
+        "answer": "Ensure your flight data is complete and wait a few moments for blockchain verification. If it still doesn’t display, reach out to support."
+      },
+      {
+        "question": "How can I reset my account?",
+        "answer": "Since CarbonTrack uses blockchain authentication, your account is tied to your wallet. If you lose wallet access, create a new account with a different wallet."
+      },
+      {
+        "question": "What if I face a technical issue?",
+        "answer": "Contact CarbonTrack support or check the help section in the app for solutions to common issues."
+      }
+    ]
+  }
+]
