@@ -5,7 +5,7 @@ import { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } from "@web3auth/base";
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { getDefaultExternalAdapters } from "@web3auth/default-evm-adapter";
 import { ethers } from "ethers";
-import RPC from "./ethersRPC"; // Ensure this is the correct path
+import RPC from "./ethersRPC"; // Ensure this is t
 import { PushAPI, CONSTANTS } from "@pushprotocol/restapi";
 
 const clientId =
